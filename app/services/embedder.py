@@ -111,3 +111,5 @@ def embed_head_to_head(fixtures: list, team1_id: int, team2_id: int):
 
     add_documents(documents, ids, metadatas)
     logger.info(f"Embedded {len(documents)} h2h fixtures")
+
+
