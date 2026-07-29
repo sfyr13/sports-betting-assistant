@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import analysis
+from app.api.routes import analysis, ingestion
 
 app = FastAPI(
     title="Sports Betting Assistant",
@@ -8,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(analysis.router, prefix="/api/v1")
+app.include_router(ingestion.router, prefix="/api/v1")
 
 @app.get("/health")
 def health_check():
