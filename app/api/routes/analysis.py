@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from app.services.analyst import analyze_query
 
 router = APIRouter()
 
@@ -16,10 +17,11 @@ class AnalysisResponse(BaseModel):
 async def analyze(request: AnalysisRequest):
     if not request.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty")
-    
-    # placeholder for now — we'll replace this with real logic soon
+
+    analysis_result = analyze_query(request.query)
+
     return AnalysisResponse(
         query=request.query,
-        analysis="Analysis coming soon...",
+        analysis=analysis_result,
         league=request.league
     )
