@@ -8,7 +8,9 @@ router = APIRouter()
 class IngestFixturesRequest(BaseModel):
     league_id: int
     season: int
-    next: int = 10
+    next: int = None
+    from_date: str = None
+    to_date: str = None
 
 class IngestTeamStatsRequest(BaseModel):
     league_id: int
@@ -22,7 +24,13 @@ class IngestH2HRequest(BaseModel):
 
 @router.post("/ingest/fixtures")
 async def ingest_fixtures(request: IngestFixturesRequest):
-    fixtures = get_fixtures(request.league_id, request.season, request.next)
+    fixtures = get_fixtures(
+        request.league_id,
+        request.season,
+        request.next,
+        request.from_date,
+        request.to_date
+    )
 
     if not fixtures:
         raise HTTPException(status_code=404, detail="No fixtures found for these parameters")
