@@ -8,7 +8,7 @@ collection = client.get_or_create_collection(
 )
 
 def add_documents(documents: list[str], ids: list[str], metadatas: list[dict] = None):
-    collection.add(
+    collection.upsert(
         documents=documents,
         ids=ids,
         metadatas=metadatas or []

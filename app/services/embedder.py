@@ -10,12 +10,21 @@ def format_fixture(fixture: dict) -> str:
         date = fixture["fixture"]["date"]
         league = fixture["league"]["name"]
         venue = fixture["fixture"]["venue"]["name"]
+        status = fixture["fixture"]["status"]["short"]
+        home_goals = fixture["goals"]["home"]
+        away_goals = fixture["goals"]["away"]
+
+        if status == "FT":
+            score_text = f"Final Score: {home_team} {home_goals} - {away_goals} {away_team}"
+        else:
+            score_text = "Match not yet played"
 
         return (
             f"{home_team} vs {away_team} | "
             f"League: {league} | "
             f"Date: {date} | "
-            f"Venue: {venue}"
+            f"Venue: {venue} | "
+            f"{score_text}"
         )
     except KeyError as e:
         logger.error(f"Missing field in fixture data: {e}")

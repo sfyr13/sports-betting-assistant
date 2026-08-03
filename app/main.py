@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.api.routes import analysis, ingestion
 
 app = FastAPI(
-    title="Sports Betting Assistant",
+    title="MatchSense",
     description="AI-powered sports betting analysis",
     version="1.0.0"
 )
