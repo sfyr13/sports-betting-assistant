@@ -1,11 +1,29 @@
 import logging
 from langchain_core.tools import tool
-from app.services.fetcher import get_fixtures, get_team_statistics, get_head_to_head
+from app.services.fetcher import get_fixtures, get_team_statistics, get_head_to_head,search_team
 from app.services.embedder import embed_fixtures, embed_team_statistics, embed_head_to_head
 from app.db.vector_store import query_documents
 
 logger = logging.getLogger(__name__)
 
+@tool
+def find_team_id(team_name: str) -> str:
+    """
+    Search for a football team by name and return its ID and basic info.
+    ALWAYS use this tool first when you need a team's ID and don't already
+    know it for certain, before calling any other tool that requires a team_id.
+    Never guess a team ID.
+    """
+    teams = search_team(team_name)
+    if not teams:
+        return f"No team found matching '{team_name}'."
+
+    results = []
+    for entry in teams[:5]:
+        team = entry["team"]
+        results.append(f"{team['name']} (ID: {team['id']}, Country: {team['country']})")
+
+    return "\n".join(results)
 
 @tool
 def search_existing_data(query: str) -> str:
@@ -52,15 +70,16 @@ def fetch_and_store_team_stats(league_id: int, season: int, team_id: int) -> str
 
 
 @tool
-def fetch_and_store_head_to_head(team1_id: int, team2_id: int, last: int = 5) -> str:
+def fetch_and_store_head_to_head(team1_id: int, team2_id: int, from_date: str = None, to_date: str = None) -> str:
     """
-    Fetch head-to-head match history between two teams from API-Football,
-    then store it in the vector database. Use this when the question involves
-    comparing two specific teams' past matchups.
+    Fetch head-to-head match history between two teams from API-Football within
+    a date range, then store it in the vector database. Use this when the question
+    involves comparing two specific teams' past matchups. Dates must be YYYY-MM-DD.
+    If you don't know a good date range, use a wide one like the last 1-2 years.
     """
-    fixtures = get_head_to_head(team1_id, team2_id, last)
+    fixtures = get_head_to_head(team1_id, team2_id, from_date, to_date)
     if not fixtures:
-        return "No head-to-head data found for these teams."
+        return "No head-to-head data found for these teams in this date range."
 
     embed_head_to_head(fixtures, team1_id, team2_id)
     return f"Fetched and stored {len(fixtures)} head-to-head fixtures."

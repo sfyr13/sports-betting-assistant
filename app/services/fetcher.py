@@ -55,14 +55,52 @@ def get_team_statistics(league_id: int, season: int, team_id: int):
     data = response.json()
     return data.get("response", {})
 
-def get_head_to_head(team1_id: int, team2_id: int, last: int = 5):
-    response = requests.get(
-        f"{BASE_URL}/fixtures/headtohead",
-        headers=headers,
-        params={
-            "h2h": f"{team1_id}-{team2_id}",
-            "last": last
+def get_head_to_head(team1_id: int, team2_id: int, from_date: str = None, to_date: str = None):
+    try:
+        params = {
+            "h2h": f"{team1_id}-{team2_id}"
         }
-    )
-    data = response.json()
-    return data.get("response", [])
+        if from_date:
+            params["from"] = from_date
+        if to_date:
+            params["to"] = to_date
+
+        response = requests.get(
+            f"{BASE_URL}/fixtures/headtohead",
+            headers=headers,
+            params=params,
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", [])
+    except requests.exceptions.Timeout:
+        logger.error("Request timed out while fetching head to head")
+        return []
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP error while fetching head to head: {e}")
+        return []
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error fetching head to head: {e}")
+        return []
+
+def search_team(team_name: str):
+    try:
+        response = requests.get(
+            f"{BASE_URL}/teams",
+            headers=headers,
+            params={"search": team_name},
+            timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", [])
+    except requests.exceptions.Timeout:
+        logger.error("Request timed out while searching team")
+        return []
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP error while searching team: {e}")
+        return []
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error searching team: {e}")
+        return []

@@ -59,14 +59,17 @@ def format_head_to_head(fixtures: list) -> list[str]:
         try:
             home_team = fixture["teams"]["home"]["name"]
             away_team = fixture["teams"]["away"]["name"]
+            date = fixture["fixture"]["date"]
+            status = fixture["fixture"]["status"]["short"]
             home_goals = fixture["goals"]["home"]
             away_goals = fixture["goals"]["away"]
-            date = fixture["fixture"]["date"]
 
-            results.append(
-                f"{home_team} {home_goals} - {away_goals} {away_team} | "
-                f"Date: {date}"
-            )
+            if status == "FT":
+                score_text = f"Final Score: {home_team} {home_goals} - {away_goals} {away_team}"
+            else:
+                score_text = f"{home_team} vs {away_team} | Match not yet played"
+
+            results.append(f"Date: {date} | {score_text}")
         except KeyError as e:
             logger.error(f"Missing field in h2h fixture: {e}")
             continue

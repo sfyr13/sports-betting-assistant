@@ -7,6 +7,7 @@ from app.services.tools import (
     fetch_and_store_fixtures,
     fetch_and_store_team_stats,
     fetch_and_store_head_to_head,
+    find_team_id,
 )
 from app.config import settings
 
@@ -20,6 +21,7 @@ llm = ChatOpenAI(
 
 tools = [
     search_existing_data,
+    find_team_id,
     fetch_and_store_fixtures,
     fetch_and_store_team_stats,
     fetch_and_store_head_to_head,
@@ -33,16 +35,17 @@ and betting insights using real data.
 
 Always follow this approach:
 1. First, search existing data to see if relevant information is already available.
-2. If the existing data is insufficient or missing, fetch fresh data using the
+2. If you need a team's ID for any tool and are not certain of it, use find_team_id
+   to look it up. Never guess a team ID.
+3. If the existing data is insufficient or missing, fetch fresh data using the
    appropriate tool (fixtures, team statistics, or head-to-head).
-3. After fetching new data, search existing data again to retrieve it in usable form.
-4. Once you have enough context, provide a detailed, analytical answer.
+4. After fetching new data, search existing data again to retrieve it in usable form.
+5. Once you have enough context, provide a detailed, analytical answer.
 
 Common league IDs: Premier League=39, La Liga=140, Serie A=135, Bundesliga=78.
-Common team IDs: Real Madrid=541, Barcelona=529, Manchester City=50, Liverpool=40.
 
 Be transparent if you still don't have enough data after trying to fetch it.
-Never make up statistics or results that aren't grounded in tool results."""),
+Never make up statistics, results, or team IDs that aren't grounded in tool results."""),
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])

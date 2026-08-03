@@ -13,3 +13,9 @@ app.include_router(ingestion.router, prefix="/api/v1")
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+import os
+
+print("DEBUG LANGCHAIN_TRACING_V2:", os.environ.get("LANGCHAIN_TRACING_V2"))
+print("DEBUG LANGCHAIN_API_KEY:", os.environ.get("LANGCHAIN_API_KEY"))
+print("DEBUG LANGCHAIN_PROJECT:", os.environ.get("LANGCHAIN_PROJECT"))
